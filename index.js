@@ -37,12 +37,13 @@ bot.on("message", (message) => {
     const args = message.content.slice(PREFIX.length).trim().split(/ +/);
     const commandName = args.shift().toLowerCase();
 
-    if (!bot.commands.has(commandName)) {
-        console.log(bot.commands);
-        return;
-    };
+    if (!bot.commands.has(commandName)) return;
 
     const command = bot.commands.get(commandName);
+
+    if (command.guildOnly && message.channel.type === "dm") {
+      return message.reply("I can't execute that command inside DMs!");
+    }
 
     try {
       command.execute(message, args);
