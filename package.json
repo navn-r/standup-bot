@@ -18,6 +18,7 @@
   "homepage": "https://github.com/navn-r/standup-bot#readme",
   "dependencies": {
     "discord.js": "^12.3.1",
-    "dotenv": "^8.2.0"
+    "dotenv": "^8.2.0",
+    "mongoose": "^5.10.8"
   }
 }

@@ -6,6 +6,7 @@ const { Client, MessageEmbed, Collection } = require("discord.js");
 
 const bot = new Client();
 bot.commands = new Collection();
+bot.mongoose = require('./utils/mongoose');
 
 const commandFiles = fs
   .readdirSync("./commands")
@@ -53,4 +54,5 @@ bot.on("message", (message) => {
     }
 });
 
+bot.mongoose.init();
 bot.login(process.env.DISCORD_TOKEN);
