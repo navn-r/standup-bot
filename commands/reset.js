@@ -12,7 +12,7 @@ module.exports = {
   async execute(message, args) {
     // Check if user has perms
     if (!message.member.hasPermission("MANAGE_GUILD")) {
-      return message.channel.reply("You do not have the required permission!");
+      return message.reply("You do not have the required permission!");
     }
 
     let check = true;
@@ -20,16 +20,13 @@ module.exports = {
       standup.responses.clear();
       standup.members = [];
       standup.standupTime = "11:00:00";
-      standup.save().then(() => message.channel.reply("\nStandup successfully reset! :tada:\n*There are no memebers in the standup, the standup time is now* `11:00:00`")).catch(err => {
+      standup.save().then(() => message.reply("\nStandup successfully reset! :tada:\n*There are no memebers in the standup, the standup time is now* `11:00:00`")).catch(err => {
         console.error(err);
-        check = false;
+        message.channel.send("Oh no :scream:! An error occured somewhere in the matrix!");
       })
     }).catch(err => {
       console.error(err);
-      check = false;
+      message.channel.send("Oh no :scream:! An error occured somewhere in the matrix!");
     })
-
-    if (!check)
-      return message.channel.send("Oh no :scream:! An error occured somewhere in the matrix!");
   },
 };

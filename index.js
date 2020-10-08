@@ -22,7 +22,7 @@ const standupIntroMessage = new MessageEmbed()
   .setTitle("Daily Standup")
   .setURL("https://www.youtube.com/watch?v=dQw4w9WgXcQ")
   .setDescription(
-    "This is the newly generated **_read-only_** text channel used for daily standups! :tada:"
+    "This is the newly generated text channel used for daily standups! :tada:"
   )
   .addFields(
     {
@@ -80,22 +80,25 @@ bot.on("message", async (message) => {
 
   if (!bot.commands.has(commandName)) return;
 
+  if (message.mentions.users.has(bot.user.id)) 
+    return message.channel.send(":robot:");
+  
   const command = bot.commands.get(commandName);
 
+
   if (command.guildOnly && message.channel.type === "dm") {
-    return message.reply("Hmm, that command cannot be used in a dm!");
+    return message.channel.send("Hmm, that command cannot be used in a dm!");
   }
 
   try {
     await command.execute(message, args);
   } catch (error) {
     console.error(error);
-    message.reply(`Error 8008135: Something went wrong!`);
+    message.channel.send(`Error 8008135: Something went wrong!`);
   }
 });
 
 bot.on("guildCreate", async (guild) => {
-  // create introduction
 
   // creates the text channel
   const channel = await guild.channels.create("daily-standups", {
@@ -103,22 +106,26 @@ bot.on("guildCreate", async (guild) => {
     topic: "Scrum Standup Meeting Channel",
   });
 
-  // sets text channel to read only
-  await channel.createOverwrite(guild.roles.everyone, {
-    SEND_MESSAGES: false,
-    MANAGE_MESSAGES: false,
-  });
+  // create the role
+  const role = await guild.roles.create({
+    data: {
+      name: "Standuppers",
+      color: "ORANGE"
+    },
+    reason: "required for daily-standups"
+  })
 
   const newStandup = new standupModel({
     _id: guild.id,
     channelId: channel.id,
+    roleId: role.id,
     standupTime: "11:00:00",
-    members: []
+    responses: new Map()
   });
 
   newStandup.save().then(() => console.log("Howdy!")).catch(err => console.error(err));
 
-  channel.send(standupIntroMessage);
+  await channel.send(standupIntroMessage);
 });
 
 // delete the mongodb entry
