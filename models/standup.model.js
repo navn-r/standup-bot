@@ -2,12 +2,15 @@ const { Schema, model } = require("mongoose");
 
 /**
  * Schema for standup
+ *
+ * @property {String}   _id         id of the guild
+ * @property {String}   channelId   id of the read-only channel 'daily-standups'
+ * @property {String}   standupTime time of the standup (24hr)
+ * @property {[String]} members     array of userIds for the members of the standup
+ * @property {Map}      responses   Map<UserId, String> of responses
  */
 const standupSchema = new Schema({
-  serverId: {
-    type: String,
-    required: true,
-  },
+  _id: String,
   channelId: {
     type: String,
     required: true,
@@ -17,7 +20,7 @@ const standupSchema = new Schema({
     default: "11:00:00",
     required: true,
   },
-  members: [String], // discord ids of the members
+  members: [String],
   responses: {
     type: Map,
     of: String,
