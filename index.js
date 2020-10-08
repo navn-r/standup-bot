@@ -6,11 +6,13 @@
  *  - fs: file system support (for reading ./commands)
  *  - mongoose: mongoDB client
  *  - discord.js: discord (duh)
+ *  - standup.model: the model for the standup stored in mongo
  */
 require("dotenv").config();
 const fs = require("fs");
 const mongoose = require("mongoose");
 const { Client, MessageEmbed, Collection } = require("discord.js");
+const Standup = require('./models/standup.model');
 
 const PREFIX = "!";
 
@@ -47,7 +49,7 @@ mongoose.connection.once("open", () => console.log("mongoDB connected"));
 bot.once("ready", () => console.log("Discord Bot Ready"));
 
 // when a user enters a command
-bot.on("message", (message) => {
+bot.on("message", async (message) => {
   if (!message.content.startsWith(PREFIX) || message.author.bot) return;
 
   const args = message.content.slice(PREFIX.length).trim().split(/ +/);
@@ -62,16 +64,15 @@ bot.on("message", (message) => {
   }
 
   try {
-    command.execute(message, args);
+    await command.execute(message, args);
   } catch (error) {
     console.error(error);
     message.reply(`Error 8008135: Something went wrong!`);
   }
 });
 
-// create the mongoDB entry + create a seperate readonly channel
 bot.on("guildCreate", (guild) => {
-  // ... init function goes here
+  // create introduction and prompt to init
 });
 
 // delete the mongodb entry
