@@ -5,7 +5,7 @@ const PREFIX = "!";
  */
 module.exports = {
   name: "help",
-  description: "List all commands",
+  description: "Shows all commands",
   usage: "[command name]",
   execute(message, args) {
     const data = [];

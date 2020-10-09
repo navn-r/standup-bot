@@ -3,7 +3,7 @@ const standupModel = require("../models/standup.model");
 module.exports = {
   name: "view",
   usage: "@<optional_serverId>",
-  description: "View your standup prompt",
+  description: "View your standup response",
   execute(message, args) {
     if (message.channel.type === "dm") {
       if (args.length == 1 && !args[0].startsWith("@")) {

@@ -32,7 +32,7 @@ const standupIntroMessage = new MessageEmbed()
     },
     {
       name: "How does this work?",
-      value: `Anytime before the standup time \`10:00 AM EST\`, members would private DM me with the command \`${PREFIX}prompt\`, I will present the standup prompt and they will type their response. I will then save their response in my *secret special chamber of data*, and during the designated standup time, I would present everyone's answer to \`#daily-standups\`.`,
+      value: `Anytime before the standup time \`10:00 AM EST\`, members would private DM me with the command \`${PREFIX}show\`, I will present the standup prompt and they will type their response using the command \`${PREFIX}reply @<optional_serverId> [your-message-here]\`. I will then save their response in my *secret special chamber of data*, and during the designated standup time, I would present everyone's answer to \`#daily-standups\`.`,
     },
     {
       name: "Getting started",
@@ -170,7 +170,7 @@ let cron = schedule.scheduleJob(
           bot.channels.cache
             .get(standup.channelId)
             .send(
-              dailyStandupSummary
+              new MessageEmbed(dailyStandupSummary)
                 .setDescription(missingString)
                 .addFields(memberResponses)
             );
