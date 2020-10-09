@@ -6,12 +6,14 @@
  *  - fs: file system support (for reading ./commands)
  *  - mongoose: mongoDB client
  *  - discord.js: discord (duh)
+ *  - schedule: for running the cron jobs
  *  - standup.model: the model for the standup stored in mongo
  */
 require("dotenv").config();
 const fs = require("fs");
 const mongoose = require("mongoose");
 const { Client, MessageEmbed, Collection } = require("discord.js");
+const schedule = require("node-schedule");
 const standupModel = require("./models/standup.model");
 
 const PREFIX = "!";
@@ -30,13 +32,23 @@ const standupIntroMessage = new MessageEmbed()
     },
     {
       name: "How does this work?",
-      value: `Anytime before the standup time \`11:00 AM EST\`, members would private DM me with the command \`${PREFIX}prompt\`, I will present the standup prompt and they will type their response. I will then save their response in my *secret special chamber of data*, and during the designated standup time, I would present everyone's answer to \`#daily-standups\`.`,
+      value: `Anytime before the standup time \`10:00 AM EST\`, members would private DM me with the command \`${PREFIX}prompt\`, I will present the standup prompt and they will type their response. I will then save their response in my *secret special chamber of data*, and during the designated standup time, I would present everyone's answer to \`#daily-standups\`.`,
     },
     {
       name: "Getting started",
       value: `*Currently*, there are no members in the standup! To add a member try \`${PREFIX}am <User>\`.`,
     }
   )
+  .setFooter(
+    "https://github.com/navn-r/standup-bot",
+    "https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png"
+  )
+  .setTimestamp();
+
+const dailyStandupSummary = new MessageEmbed()
+  .setColor("#ff9900")
+  .setTitle("Daily Standup")
+  .setURL("https://www.youtube.com/watch?v=dQw4w9WgXcQ")
   .setFooter(
     "https://github.com/navn-r/standup-bot",
     "https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png"
@@ -80,11 +92,10 @@ bot.on("message", async (message) => {
 
   if (!bot.commands.has(commandName)) return;
 
-  if (message.mentions.users.has(bot.user.id)) 
+  if (message.mentions.users.has(bot.user.id))
     return message.channel.send(":robot:");
-  
-  const command = bot.commands.get(commandName);
 
+  const command = bot.commands.get(commandName);
 
   if (command.guildOnly && message.channel.type === "dm") {
     return message.channel.send("Hmm, that command cannot be used in a dm!");
@@ -99,7 +110,6 @@ bot.on("message", async (message) => {
 });
 
 bot.on("guildCreate", async (guild) => {
-
   // creates the text channel
   const channel = await guild.channels.create("daily-standups", {
     type: "text",
@@ -111,17 +121,69 @@ bot.on("guildCreate", async (guild) => {
     _id: guild.id,
     channelId: channel.id,
     members: [],
-    responses: new Map()
+    responses: new Map(),
   });
 
-  newStandup.save().then(() => console.log("Howdy!")).catch(err => console.error(err));
+  newStandup
+    .save()
+    .then(() => console.log("Howdy!"))
+    .catch((err) => console.error(err));
 
   await channel.send(standupIntroMessage);
 });
 
 // delete the mongodb entry
 bot.on("guildDelete", (guild) => {
-  standupModel.findByIdAndDelete(guild.id).then(() => console.log("Peace!")).catch(err => console.error(err));
+  standupModel
+    .findByIdAndDelete(guild.id)
+    .then(() => console.log("Peace!"))
+    .catch((err) => console.error(err));
 });
+
+/**
+ * Cron Job: 10:00:00 AM EST - Go through each standup and output the responses to the channel
+ */
+let cron = schedule.scheduleJob(
+  { hour: 23, minute: 34, dayOfWeek: new schedule.Range(0, 5) },
+  (time) => {
+    console.log(`[${time}] - CRON JOB START`);
+    standupModel
+      .find()
+      .then((standups) => {
+        standups.forEach((standup) => {
+          let memberResponses = [];
+          let missingMembers = [];
+          standup.members.forEach((id) => {
+            if (standup.responses.has(id)) {
+              memberResponses.push({
+                name: `-`,
+                value: `<@${id}>\n${standup.responses.get(id)}`,
+              });
+              standup.responses.delete(id);
+            } else {
+              missingMembers.push(id);
+            }
+          });
+          let missingString = "Hooligans: ";
+          if (!missingMembers.length) missingString += ":man_shrugging:";
+          else missingMembers.forEach((id) => (missingString += `<@${id}> `));
+          bot.channels.cache
+            .get(standup.channelId)
+            .send(
+              dailyStandupSummary
+                .setDescription(missingString)
+                .addFields(memberResponses)
+            );
+          standup
+            .save()
+            .then(() =>
+              console.log(`[${new Date()}] - ${standup._id} RESPONSES CLEARED`)
+            )
+            .catch((err) => console.error(err));
+        });
+      })
+      .catch((err) => console.error(err));
+  }
+);
 
 bot.login(process.env.DISCORD_TOKEN);

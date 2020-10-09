@@ -17,9 +17,8 @@ module.exports = {
 
     let check = true;
     standupModel.findById(message.guild.id).then(standup => {
-      standup.responses.clear();
+      standup.members.forEach(id => {if(standup.responses.has(id)) {standup.responses.delete(id);}});
       standup.members = [];
-      standup.standupTime = "11:00:00";
       standup.save().then(() => message.channel.send("\nStandup successfully reset! :tada:\n*There are no memebers in the standup, and all responses have been cleared!*")).catch(err => {
         console.error(err);
         message.channel.send("Oh no :scream:! An error occured somewhere in the matrix!");
