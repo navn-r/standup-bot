@@ -16,7 +16,6 @@ const standupModel = require("./models/standup.model");
 
 const PREFIX = "!";
 
-// idk where to put this yet, just here temporarily
 const standupIntroMessage = new MessageEmbed()
   .setColor("#ff9900")
   .setTitle("Daily Standup")
@@ -27,19 +26,20 @@ const standupIntroMessage = new MessageEmbed()
   .addFields(
     {
       name: "Introduction",
-      value:
-        "Hi! I'm Stan D. Upbot and I will be facilitating your daily standups from now on.\nTo view all available commands, try `!help`.",
+      value: `Hi! I'm Stan D. Upbot and I will be facilitating your daily standups from now on.\nTo view all available commands, try \`${PREFIX}help\`.`,
     },
     {
       name: "How does this work?",
-      value:
-        "Anytime before the standup time (default `11:00:00`), members would private DM me with the command `!response`, I will present the standup prompt and they will type their response. I will then save their response in my *secret special chamber of data*, and during the designated standup time, I would present everyone's answer to `#daily-standups`.",
+      value: `Anytime before the standup time \`11:00 AM EST\`, members would private DM me with the command \`${PREFIX}prompt\`, I will present the standup prompt and they will type their response. I will then save their response in my *secret special chamber of data*, and during the designated standup time, I would present everyone's answer to \`#daily-standups\`.`,
     },
     {
       name: "Getting started",
-      value:
-        "*Currently*, there are no members in the standup! To add a member try `!am <User>`.",
+      value: `*Currently*, there are no members in the standup! To add a member try \`${PREFIX}am <User>\`.`,
     }
+  )
+  .setFooter(
+    "https://github.com/navn-r/standup-bot",
+    "https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png"
   )
   .setTimestamp();
 
@@ -106,20 +106,11 @@ bot.on("guildCreate", async (guild) => {
     topic: "Scrum Standup Meeting Channel",
   });
 
-  // create the role
-  const role = await guild.roles.create({
-    data: {
-      name: "Standuppers",
-      color: "ORANGE"
-    },
-    reason: "required for daily-standups"
-  })
-
+  // creates the database model
   const newStandup = new standupModel({
     _id: guild.id,
     channelId: channel.id,
-    roleId: role.id,
-    standupTime: "11:00:00",
+    members: [],
     responses: new Map()
   });
 

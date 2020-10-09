@@ -11,7 +11,7 @@ module.exports = {
     standupModel.findById(message.guild.id).then(standup => {
       let res = "Here are all members participating in the standup:\n";
       if(!standup.members.length) {
-        message.reply("Hmm, there does not seem to be any members in the standup. Try `!am @<user> @<optional_user> ...` to add member(s)")
+        message.reply("there does not seem to be any members in the standup. Try `!am @<user> @<optional_user> ...` to add member(s)")
       } else {
         standup.members.forEach(member => {
           res += `<@${member}>\t`;

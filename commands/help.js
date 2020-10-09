@@ -18,7 +18,7 @@ module.exports = {
       data.push("Here's a list of all my commands:");
       let cmds = "";
       commands.forEach(command => {
-        cmds += `\`${command.name.padEnd(4, ' ')}\``;
+        cmds += (`\`${PREFIX}${command.name}\``).padEnd(6, '\t');
         if(command.description) cmds += `\t*${command.description}*\n`
       });
       data.push(cmds);

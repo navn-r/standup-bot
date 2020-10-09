@@ -21,14 +21,26 @@ module.exports = {
           if (mention.startsWith("<@") && mention.endsWith(">")) {
             mention = mention.slice(2, -1);
 
-            if (mention.startsWith("!")) 
-                mention = mention.slice(1);
+            if (mention.startsWith("!")) mention = mention.slice(1);
 
             const member = message.guild.members.cache.get(mention);
-            if(member)
-              message.guild.roles.fetch(standup.roleId).then((role) => member.roles.remove(role));
+
+            if (member && standup.members.indexOf(member.id) != -1)
+              standup.members = standup.members.filter(
+                (id) => id !== member.id
+              );
           }
         });
+
+        standup
+          .save()
+          .then(() => message.channel.send("Members updated :tada:"))
+          .catch((err) => {
+            console.err(err);
+            message.channel.send(
+              "Oh no :scream:! An error occured somewhere in the matrix!"
+            );
+          });
       })
       .catch((err) => {
         console.error(err);

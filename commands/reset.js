@@ -20,7 +20,7 @@ module.exports = {
       standup.responses.clear();
       standup.members = [];
       standup.standupTime = "11:00:00";
-      standup.save().then(() => message.reply("\nStandup successfully reset! :tada:\n*There are no memebers in the standup, the standup time is now* `11:00:00`")).catch(err => {
+      standup.save().then(() => message.channel.send("\nStandup successfully reset! :tada:\n*There are no memebers in the standup, and all responses have been cleared!*")).catch(err => {
         console.error(err);
         message.channel.send("Oh no :scream:! An error occured somewhere in the matrix!");
       })
