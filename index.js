@@ -32,7 +32,7 @@ const standupIntroMessage = new MessageEmbed()
     },
     {
       name: "How does this work?",
-      value: `Anytime before the standup time \`10:00 AM EST\`, members would private DM me with the command \`${PREFIX}show\`, I will present the standup prompt and they will type their response using the command \`${PREFIX}reply @<optional_serverId> [your-message-here]\`. I will then save their response in my *secret special chamber of data*, and during the designated standup time, I would present everyone's answer to \`#daily-standups\`.`,
+      value: `Anytime before the standup time \`10:30 AM EST\`, members would private DM me with the command \`${PREFIX}show\`, I will present the standup prompt and they will type their response using the command \`${PREFIX}reply @<optional_serverId> [your-message-here]\`. I will then save their response in my *secret special chamber of data*, and during the designated standup time, I would present everyone's answer to \`#daily-standups\`.`,
     },
     {
       name: "Getting started",
@@ -141,10 +141,10 @@ bot.on("guildDelete", (guild) => {
 });
 
 /**
- * Cron Job: 12:00:00 PM EST - Go through each standup and output the responses to the channel
+ * Cron Job: 10:30:00 AM EST - Go through each standup and output the responses to the channel
  */
 let cron = schedule.scheduleJob(
-  { hour: 16, minute: 0, dayOfWeek: new schedule.Range(1, 5) },
+  { hour: 14, minute: 30, dayOfWeek: new schedule.Range(1, 5) },
   (time) => {
     console.log(`[${time}] - CRON JOB START`);
     standupModel
