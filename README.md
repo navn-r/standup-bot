@@ -30,7 +30,7 @@ The bot will then create an entry in the `MongoDB` database for the server, crea
 
 
 ### Usage
-> Standup time is set to `10:00:00 AM EST` every weekday
+> Standup time is set to `12:00:00 PM EST` every weekday
 
 Anytime before the standup time, added members must DM the bot with the `reply` followed by their message. The bot will then upload this response to the database.    
 Come standup time, the bot will create an Embed with all collected member responses *and* will include a `Hooligans` section with mentions of members who did not participate.  
