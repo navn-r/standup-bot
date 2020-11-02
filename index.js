@@ -144,7 +144,7 @@ bot.on("guildDelete", (guild) => {
  * Cron Job: 10:30:00 AM EST - Go through each standup and output the responses to the channel
  */
 let cron = schedule.scheduleJob(
-  { hour: 14, minute: 30, dayOfWeek: new schedule.Range(1, 5) },
+  { hour: 15, minute: 30, dayOfWeek: new schedule.Range(1, 5) },
   (time) => {
     console.log(`[${time}] - CRON JOB START`);
     standupModel
