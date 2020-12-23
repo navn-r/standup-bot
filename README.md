@@ -1,15 +1,17 @@
 # Standup Bot :robot:
 > Discord bot for Scrum daily standups
 
+**THIS BOT IS NOT IN USE ANYMORE**
+
 ## How-To:
 
 #### *Disclaimer:* 
 
 This bot is not meant to replace your daily standups outright. It is more of a helper for your meetings. Instead of spending time going around asking the same questions everyday, time can be reserved for more important non-repetitive discussion and help.
 
-### Initial Setup
+### Initial Setup 
 
-[**Click Here**](https://discord.com/api/oauth2/authorize?client_id=763409520541827102&permissions=8&redirect_uri=https%3A%2F%2Fdiscord.com%2Fdevelopers%2Fapplications%2F763409520541827102%2Foauth2&scope=bot) to add the bot to your server. 
+[**Click Here**](https://www.youtube.com/watch?v=xfr64zoBTAQ) to add the bot to your server. 
 > Note that the above requires you to have the **Manage Server** permission in this server  
 
 The bot will then create an entry in the `MongoDB` database for the server, create the text channel `#daily-standups` and send an introduction.
