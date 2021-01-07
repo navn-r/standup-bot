@@ -11,7 +11,7 @@ This bot is not meant to replace your daily standups outright. It is more of a h
 
 ### Initial Setup 
 
-[**Click Here**](https://www.youtube.com/watch?v=xfr64zoBTAQ) to add the bot to your server. 
+[~~**Click Here**~~](https://www.youtube.com/watch?v=xfr64zoBTAQ) to add the bot to your server. 
 > Note that the above requires you to have the **Manage Server** permission in this server  
 
 The bot will then create an entry in the `MongoDB` database for the server, create the text channel `#daily-standups` and send an introduction.
@@ -46,3 +46,36 @@ After the message has been posted, the bot will delete all member responses, thu
 - `MongoDB` with `mongoose`
 - `Heroku` for hosting
 - :heart:
+
+
+### Screenshots 📸
+<br />
+
+<h5 align="center">
+  <img src="docs/screenshots/standup-bot-1.png" />
+</h5>
+<h5 align="center"> 
+
+ *Text channel creation and initial message on join (1920x1080)*  
+
+</h5>
+<br />
+
+<h5 align="center">
+  <img src="docs/screenshots/standup-bot-2.png" />
+</h5>
+<h5 align="center"> 
+
+ *Private messaging bot with commands (1920x1080)*  
+
+</h5>
+<br />
+
+<h5 align="center">
+  <img src="docs/screenshots/standup-bot-3.png" />
+</h5>
+<h5 align="center"> 
+
+ *Daily standup message example with hooligans (1920x1080)*  
+
+</h5>
