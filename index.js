@@ -70,16 +70,24 @@ for (const file of commandFiles) {
   bot.commands.set(command.name, command);
 }
 
-// mongodb setup with mongoose
-mongoose
-  .connect(process.env.MONGO_URI, {
-    useNewUrlParser: true,
-    useCreateIndex: true,
-    useUnifiedTopology: true,
-  })
-  .catch(() => console.log("Ruh Roh!"));
+const { MongoMemoryServer } = require('mongodb-memory-server');
 
-mongoose.connection.once("open", () => console.log("mongoDB connected"));
+
+MongoMemoryServer.create({ autoStart: true }).then((mongos) => {
+  // mongodb setup with mongoose
+  mongos.getConnectionString().then((uri) => {
+    mongoose
+    .connect(uri, {
+      useNewUrlParser: true,
+      useCreateIndex: true,
+      useUnifiedTopology: true,
+    })
+    .catch(() => console.log("Ruh Roh!"));
+
+    mongoose.connection.once("open", () => console.log("mongoDB connected"));
+  })
+
+})
 
 bot.once("ready", () => console.log("Discord Bot Ready"));
 
