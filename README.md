@@ -1,8 +1,6 @@
 # Standup Bot 🤖
 > Discord bot for Scrum daily standups
 
-**THIS BOT IS NOT IN USE ANYMORE**
-
 ## How-To:
 
 #### *Disclaimer:* 
