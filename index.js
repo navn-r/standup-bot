@@ -15,6 +15,7 @@ const mongoose = require("mongoose");
 const { Client, MessageEmbed, Collection } = require("discord.js");
 const schedule = require("node-schedule");
 const standupModel = require("./models/standup.model");
+const showPromptCommand = require("./commands/showPrompt");
 
 const PREFIX = "!";
 
@@ -150,12 +151,36 @@ bot.on("guildDelete", (guild) => {
 });
 
 /**
- * Cron Job: 10:30:00 AM EST - Go through each standup and output the responses to the channel
+ * Cron Job: 08:00:00 AM Europe/Zagreb - Go through each member and ask for standup
  */
 let cron = schedule.scheduleJob(
-  { hour: 15, minute: 30, dayOfWeek: new schedule.Range(1, 5) },
+  { hour: 8, minute: 0, dayOfWeek: new schedule.Range(1, 5), tz: "Europe/Zagreb" },
   (time) => {
-    console.log(`[${time}] - CRON JOB START`);
+    console.log(`[${time}] - CRON JOB 1 START`);
+    standupModel
+      .find()
+      .then((standups) => {
+        standups.forEach((standup) => {
+          const members = new Set();
+          standup.members.forEach((member) => {
+            members.add(member);
+          })
+          members.forEach((member) => {
+            bot.users.cache.get(member).send(showPromptCommand.message);
+          })
+        });
+      })
+      .catch((err) => console.error(err));
+  }
+);
+
+/**
+ * Cron Job: 10:30:00 AM Europe/Zagreb - Go through each standup and output the responses to the channel
+ */
+let cron = schedule.scheduleJob(
+  { hour: 10, minute: 30, dayOfWeek: new schedule.Range(1, 5), tz: "Europe/Zagreb" },
+  (time) => {
+    console.log(`[${time}] - CRON JOB 2 START`);
     standupModel
       .find()
       .then((standups) => {
