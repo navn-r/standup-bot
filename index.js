@@ -41,7 +41,7 @@ const standupIntroMessage = new MessageEmbed()
     }
   )
   .setFooter(
-    "https://github.com/navn-r/standup-bot",
+    "https://github.com/nodefactoryio/standup-bot",
     "https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png"
   )
   .setTimestamp();
@@ -51,7 +51,7 @@ const dailyStandupSummary = new MessageEmbed()
   .setTitle("Daily Standup")
   .setURL("https://www.youtube.com/watch?v=dQw4w9WgXcQ")
   .setFooter(
-    "https://github.com/navn-r/standup-bot",
+    "https://github.com/nodefactoryio/standup-bot",
     "https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png"
   )
   .setTimestamp();
@@ -71,25 +71,17 @@ for (const file of commandFiles) {
   bot.commands.set(command.name, command);
 }
 
-const { MongoMemoryServer } = require('mongodb-memory-server');
 
-
-MongoMemoryServer.create({ autoStart: true }).then((mongos) => {
-  // mongodb setup with mongoose
-  mongos.getConnectionString().then((uri) => {
-    mongoose
-    .connect(uri, {
-      useNewUrlParser: true,
-      useCreateIndex: true,
-      useUnifiedTopology: true,
-    })
-    .catch(() => console.log("Ruh Roh!"));
-
-
-    mongoose.connection.once("open", () => console.log("mongoDB connected"));
-  })
-
+mongoose
+.connect(process.env.MONGO_URI, {
+  useNewUrlParser: true,
+  useCreateIndex: true,
+  useUnifiedTopology: true,
 })
+.catch(() => console.log("Ruh Roh!"));
+
+
+mongoose.connection.once("open", () => console.log("mongoDB connected"));
 
 bot.once("ready", () => console.log("Discord Bot Ready"));
 
@@ -153,7 +145,7 @@ bot.on("guildDelete", (guild) => {
 /**
  * Cron Job: 08:00:00 AM Europe/Zagreb - Go through each member and ask for standup
  */
-let cron = schedule.scheduleJob(
+schedule.scheduleJob(
   { hour: 8, minute: 0, dayOfWeek: new schedule.Range(1, 5), tz: "Europe/Zagreb" },
   (time) => {
     console.log(`[${time}] - CRON JOB 1 START`);
@@ -177,7 +169,7 @@ let cron = schedule.scheduleJob(
 /**
  * Cron Job: 10:30:00 AM Europe/Zagreb - Go through each standup and output the responses to the channel
  */
-let cron = schedule.scheduleJob(
+schedule.scheduleJob(
   { hour: 10, minute: 30, dayOfWeek: new schedule.Range(1, 5), tz: "Europe/Zagreb" },
   (time) => {
     console.log(`[${time}] - CRON JOB 2 START`);

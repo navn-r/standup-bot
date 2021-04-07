@@ -1,0 +1,24 @@
+name: Deploy
+
+on:
+  push:
+    branches:
+      - master # Change this to your default branch
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up Node.js
+        uses: actions/setup-node@master
+        with:
+          node-version: 14
+      - uses: azure/docker-login@v1
+        with:
+          login-server: ghcr.io
+          username: ${{ secrets.CR_USER }}
+          password: ${{ secrets.CR_PAT }}
+      - run: docker build -t ghcr.io/nodefactoryio/standup-bot:${{ github.sha }} .
+      - run: docker push ghcr.io/nodefactoryio/standup-bot:${{ github.sha }}
