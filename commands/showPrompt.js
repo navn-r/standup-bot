@@ -9,7 +9,7 @@ Once you are ready to respond (before 10:30 Europe/Zagreb), simply DM me with \`
 `
 
 module.exports = {
-  message = PROMPT,
+  message: PROMPT,
   name: "show",
   description: "Shows standup prompt",
   async execute(message, args) {
