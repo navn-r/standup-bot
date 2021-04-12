@@ -151,8 +151,8 @@ schedule.scheduleJob(
     console.log(`[${time}] - CRON JOB 1 START`);
     standupModel
       .find()
-      .then(async (standups) => {
-        standups.forEach((standup) => {
+      .then((standups) => {
+        standups.forEach(async (standup) => {
           const members = new Set();
           standup.members.forEach((member) => {
             members.add(member);
