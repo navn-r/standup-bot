@@ -157,8 +157,14 @@ schedule.scheduleJob(
           standup.members.forEach((member) => {
             members.add(member);
           })
+          console.log("Sending prompt to", members);
           members.forEach((member) => {
-            bot.users.cache.get(member).send(showPromptCommand.message).catch(e => console.log(e));
+            try {
+              bot.users.cache.get(member).send(showPromptCommand.message).catch(e => console.log("Failed to send message to", member, e));
+            } catch(e) {
+              console.log("Failed to send message to", member, e);
+            }
+            
           })
         });
       })
