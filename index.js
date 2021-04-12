@@ -151,21 +151,26 @@ schedule.scheduleJob(
     console.log(`[${time}] - CRON JOB 1 START`);
     standupModel
       .find()
-      .then((standups) => {
+      .then(async (standups) => {
         standups.forEach((standup) => {
           const members = new Set();
           standup.members.forEach((member) => {
             members.add(member);
           })
           console.log("Sending prompt to", members);
-          members.forEach((member) => {
-            try {
-              bot.users.cache.get(member).send(showPromptCommand.message).catch(e => console.log("Failed to send message to", member, e));
-            } catch(e) {
-              console.log("Failed to send message to", member, e);
-            }
-            
-          })
+          try {
+            const guild = await bot.guilds.fetch(standup._id);
+            await guild.members.fetch();
+            members.forEach((member) => {
+              try {
+                bot.users.cache.get(member).send(showPromptCommand.message).catch(e => console.log("Failed to send message to", member, e));
+              } catch(e) {
+                console.log("Failed to send message to", member, e);
+              }
+            })
+          } catch(e) {
+            console.log("Failed to cache guild members", standup, guild, e);
+          }
         });
       })
       .catch((err) => console.error(err));
