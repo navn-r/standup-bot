@@ -168,25 +168,19 @@ function promptMembers() {
             members.add(member);
           })
           console.log("Sending prompt to", members);
-          try {
-            const guild = await bot.guilds.fetch(standup._id);
-            await guild.members.fetch(members);
-            members.forEach(async (member) => {
-              try {
-                const user = await bot.users.fetch(member);
-                if(user) {
-                  user.send(showPromptCommand.message).catch(e => console.log("Failed to send message to", member, e));
-                  console.log("Sent prompt to ", user.username);
-                } else {
-                  console.log("Failed to send message to", member)
-                }
-              } catch(e) {
-                console.log("Failed to send message to", member, e);
+          members.forEach(async (member) => {
+            try {
+              const user = await bot.users.fetch(member);
+              if(user) {
+                user.send(showPromptCommand.message).catch(e => console.log("Failed to send message to", member, e));
+                console.log("Sent prompt to ", user.username);
+              } else {
+                console.log("Failed to send message to", member)
               }
-            })
-          } catch(e) {
-            console.log("Failed to cache guild members", standup, e);
-          }
+            } catch(e) {
+              console.log("Failed to send message to", member, e);
+            }
+          })
         });
       })
       .catch((err) => console.error(err));
