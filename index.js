@@ -171,9 +171,15 @@ function promptMembers() {
           try {
             const guild = await bot.guilds.fetch(standup._id);
             await guild.members.fetch(members);
-            members.forEach((member) => {
+            members.forEach(async (member) => {
               try {
-                bot.users.cache.get(member).send(showPromptCommand.message).catch(e => console.log("Failed to send message to", member, e));
+                const user = await bot.users.fetch(member);
+                if(user) {
+                  user.send(showPromptCommand.message).catch(e => console.log("Failed to send message to", member, e));
+                  console.log("Sent prompt to ", user.username);
+                } else {
+                  console.log("Failed to send message to", member)
+                }
               } catch(e) {
                 console.log("Failed to send message to", member, e);
               }
