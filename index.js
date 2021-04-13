@@ -83,7 +83,12 @@ mongoose
 
 mongoose.connection.once("open", () => console.log("mongoDB connected"));
 
-bot.once("ready", () => console.log("Discord Bot Ready"));
+bot.once("ready", () => {
+  console.log("Discord Bot Ready")
+  if(Date.now() < (new Date()).setHours(10, 30)) {
+    promptMembers();
+  }
+});
 
 // when a user enters a command
 bot.on("message", async (message) => {
@@ -149,7 +154,12 @@ schedule.scheduleJob(
   { hour: 8, minute: 0, dayOfWeek: new schedule.Range(1, 5), tz: "Europe/Zagreb" },
   (time) => {
     console.log(`[${time}] - CRON JOB 1 START`);
-    standupModel
+    promptMembers();
+  }
+);
+
+function promptMembers() {
+  standupModel
       .find()
       .then((standups) => {
         standups.forEach(async (standup) => {
@@ -169,13 +179,12 @@ schedule.scheduleJob(
               }
             })
           } catch(e) {
-            console.log("Failed to cache guild members", standup, guild, e);
+            console.log("Failed to cache guild members", standup, e);
           }
         });
       })
       .catch((err) => console.error(err));
-  }
-);
+}
 
 /**
  * Cron Job: 10:30:00 AM Europe/Zagreb - Go through each standup and output the responses to the channel
