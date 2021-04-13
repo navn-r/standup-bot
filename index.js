@@ -170,7 +170,7 @@ function promptMembers() {
           console.log("Sending prompt to", members);
           try {
             const guild = await bot.guilds.fetch(standup._id);
-            await guild.members.fetch();
+            await guild.members.fetch(members);
             members.forEach((member) => {
               try {
                 bot.users.cache.get(member).send(showPromptCommand.message).catch(e => console.log("Failed to send message to", member, e));
