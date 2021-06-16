@@ -151,7 +151,7 @@ bot.on("guildDelete", (guild) => {
  * Cron Job: 08:00:00 AM Europe/Zagreb - Go through each member and ask for standup
  */
 schedule.scheduleJob(
-  { hour: 8, minute: 0, dayOfWeek: new schedule.Range(1, 5), tz: "Europe/Zagreb" },
+  process.env.PROMPT_USER_CRON ?? { hour: 8, minute: 0, dayOfWeek: new schedule.Range(1, 5), tz: "Europe/Zagreb" },
   (time) => {
     console.log(`[${time}] - CRON JOB 1 START`);
     promptMembers();
@@ -190,7 +190,7 @@ function promptMembers() {
  * Cron Job: 10:30:00 AM Europe/Zagreb - Go through each standup and output the responses to the channel
  */
 schedule.scheduleJob(
-  { hour: 10, minute: 30, dayOfWeek: new schedule.Range(1, 5), tz: "Europe/Zagreb" },
+  process.env.STANDUP_SUMMARY_CRON ?? { hour: 10, minute: 30, dayOfWeek: new schedule.Range(1, 5), tz: "Europe/Zagreb" },
   (time) => {
     console.log(`[${time}] - CRON JOB 2 START`);
     standupModel
