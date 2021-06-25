@@ -1,0 +1,22 @@
+version: '3.3'
+
+services:  
+  bot:
+    build:
+        context: .
+    container_name: standup-bot
+    env_file: .env
+    depends_on:
+        - mongo
+    volumes:
+        - .:/usr/app
+        - node_modules:/usr/app/node_modules
+  mongo:
+    image: mongo:3.0
+    container_name: standup-bot-db
+    volumes:
+        - standup_bot_db:/data/db
+
+volumes:
+  node_modules:
+  standup_bot_db:
