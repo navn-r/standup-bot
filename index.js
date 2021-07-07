@@ -172,6 +172,10 @@ function promptMembers() {
             try {
               const user = await bot.users.fetch(member);
               if(user) {
+                if(await standup.responses.has(member)) {
+                  console.log(`Member ${user.username} already submitted response`)
+                  return;
+                }
                 user.send(showPromptCommand.message).catch(e => console.log("Failed to send message to", member, e));
                 console.log("Sent prompt to ", user.username);
               } else {
