@@ -77,7 +77,7 @@ mongoose
     useCreateIndex: true,
     useUnifiedTopology: true,
   })
-  .catch(() => console.log("Ruh Roh!"));
+  .catch((e) => console.error(e));
 
 mongoose.connection.once("open", () => console.log("mongoDB connected"));
 
