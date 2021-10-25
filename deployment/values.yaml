@@ -1,0 +1,9 @@
+replicaCount: 1
+
+app:
+  nameOverride: "standup-bot"
+  fullnameOverride: "standup-bot"
+
+image:
+  repository: ghcr.io/nodefactoryio/standup-bot
+  pullPolicy: IfNotPresent

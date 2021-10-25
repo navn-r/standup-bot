@@ -15,6 +15,7 @@ const mongoose = require("mongoose");
 const { Client, MessageEmbed, Collection } = require("discord.js");
 const schedule = require("node-schedule");
 const standupModel = require("./models/standup.model");
+const showPromptCommand = require("./commands/showPrompt");
 
 const PREFIX = "!";
 
@@ -32,7 +33,7 @@ const standupIntroMessage = new MessageEmbed()
     },
     {
       name: "How does this work?",
-      value: `Anytime before the standup time \`10:30 AM EST\`, members would private DM me with the command \`${PREFIX}show\`, I will present the standup prompt and they will type their response using the command \`${PREFIX}reply @<optional_serverId> [your-message-here]\`. I will then save their response in my *secret special chamber of data*, and during the designated standup time, I would present everyone's answer to \`#daily-standups\`.`,
+      value: `Anytime before the standup time \`10:30 AM GMT+2\`, members would private DM me with the command \`${PREFIX}show\`, I will present the standup prompt and they will type their response using the command \`${PREFIX}reply @<optional_serverId> [your-message-here]\`. I will then save their response in my *secret special chamber of data*, and during the designated standup time, I would present everyone's answer to \`#daily-standups\`.`,
     },
     {
       name: "Getting started",
@@ -40,7 +41,7 @@ const standupIntroMessage = new MessageEmbed()
     }
   )
   .setFooter(
-    "https://github.com/navn-r/standup-bot",
+    "https://github.com/nodefactoryio/standup-bot",
     "https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png"
   )
   .setTimestamp();
@@ -50,7 +51,7 @@ const dailyStandupSummary = new MessageEmbed()
   .setTitle("Daily Standup")
   .setURL("https://www.youtube.com/watch?v=dQw4w9WgXcQ")
   .setFooter(
-    "https://github.com/navn-r/standup-bot",
+    "https://github.com/nodefactoryio/standup-bot",
     "https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png"
   )
   .setTimestamp();
@@ -70,7 +71,7 @@ for (const file of commandFiles) {
   bot.commands.set(command.name, command);
 }
 
-// mongodb setup with mongoose
+
 mongoose
   .connect(process.env.MONGO_URI, {
     useNewUrlParser: true,
@@ -81,7 +82,12 @@ mongoose
 
 mongoose.connection.once("open", () => console.log("mongoDB connected"));
 
-bot.once("ready", () => console.log("Discord Bot Ready"));
+bot.once("ready", () => {
+  console.log("Discord Bot Ready")
+  if(Date.now() < (new Date()).setHours(10, 30)) {
+    promptMembers();
+  }
+});
 
 // when a user enters a command
 bot.on("message", async (message) => {
@@ -141,12 +147,55 @@ bot.on("guildDelete", (guild) => {
 });
 
 /**
- * Cron Job: 10:30:00 AM EST - Go through each standup and output the responses to the channel
+ * Cron Job: 08:00:00 AM Europe/Zagreb - Go through each member and ask for standup
  */
-let cron = schedule.scheduleJob(
-  { hour: 15, minute: 30, dayOfWeek: new schedule.Range(1, 5) },
+schedule.scheduleJob(
+  process.env.PROMPT_USER_CRON ?? { hour: 8, minute: 0, dayOfWeek: new schedule.Range(1, 5), tz: "Europe/Zagreb" },
   (time) => {
-    console.log(`[${time}] - CRON JOB START`);
+    console.log(`[${time}] - CRON JOB 1 START`);
+    promptMembers();
+  }
+);
+
+function promptMembers() {
+  standupModel
+      .find()
+      .then((standups) => {
+        standups.forEach(async (standup) => {
+          const members = new Set();
+          standup.members.forEach((member) => {
+            members.add(member);
+          })
+          console.log("Sending prompt to", members);
+          members.forEach(async (member) => {
+            try {
+              const user = await bot.users.fetch(member);
+              if(user) {
+                if(await standup.responses.has(member)) {
+                  console.log(`Member ${user.username} already submitted response`)
+                  return;
+                }
+                user.send(showPromptCommand.message).catch(e => console.log("Failed to send message to", member, e));
+                console.log("Sent prompt to ", user.username);
+              } else {
+                console.log("Failed to send message to", member)
+              }
+            } catch(e) {
+              console.log("Failed to send message to", member, e);
+            }
+          })
+        });
+      })
+      .catch((err) => console.error(err));
+}
+
+/**
+ * Cron Job: 10:30:00 AM Europe/Zagreb - Go through each standup and output the responses to the channel
+ */
+schedule.scheduleJob(
+  process.env.STANDUP_SUMMARY_CRON ?? { hour: 10, minute: 30, dayOfWeek: new schedule.Range(1, 5), tz: "Europe/Zagreb" },
+  (time) => {
+    console.log(`[${time}] - CRON JOB 2 START`);
     standupModel
       .find()
       .then((standups) => {

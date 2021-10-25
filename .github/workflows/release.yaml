@@ -1,0 +1,52 @@
+name: Deploy
+
+on:
+  push:
+    branches:
+      - main # Change this to your default branch
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up Node.js
+        uses: actions/setup-node@master
+        with:
+          node-version: 14
+      - uses: azure/docker-login@v1
+        with:
+          login-server: ghcr.io
+          username: ${{ secrets.CR_USER }}
+          password: ${{ secrets.CR_WRITE_PAT }}
+      - run: docker build -t ghcr.io/nodefactoryio/standup-bot:${{ github.sha }} .
+      - run: docker push ghcr.io/nodefactoryio/standup-bot:${{ github.sha }}
+      - name: Package chart
+        uses: WyriHaximus/github-action-helm3@v2
+        with:
+          exec: "helm package --app-version ${{ github.sha }} ./deployment"
+      - name: Read Helm Chart
+        id: "chart_info"
+        uses: jacobtomlinson/gha-read-helm-chart@master
+        with:
+          path: ./deployment
+      
+      - name: 'Deploy to K8'
+        # Parameters are pulled directly from the GitHub deployment event so the
+        # configuration for the job here is very minimal.
+        uses: 'deliverybot/helm@v1.7.0'
+        with:
+          token: '${{ github.token }}'
+          secrets: '${{ toJSON(secrets) }}'
+          release: 'standup-bot'
+          namespace: 'default'
+          helm: 'helm3'
+          value-files: >-
+            [
+              "./deployment/values.yaml"
+            ]
+          version: ${{ github.sha }}
+          chart: "./${{ steps.chart_info.outputs.name }}-${{ steps.chart_info.outputs.version }}.tgz"
+        env:
+          KUBECONFIG_FILE: '${{ secrets.NF_KUBECONFIG }}'

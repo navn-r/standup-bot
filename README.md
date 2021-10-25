@@ -3,6 +3,17 @@
 
 ## How-To:
 
+#### Test out locally
+
+- visit https://discord.com/developers/applications
+- New Application -> Enter name
+- Bot -> Add Bot
+- Reveal and copy discord bot token
+- copy .env.sample into .env file
+- Set discord bot token into .env and run `docker-compose up`
+- OAuth2 -> choose bot scope -> choose permissions: Manage Channels, View Channels, Send Messages, Read Messages
+- Copy that link and use it to invite bot into your own personal discord server
+  
 #### *Disclaimer:* 
 
 This bot is not meant to replace your daily standups outright. It is more of a helper for your meetings. Instead of spending time going around asking the same questions everyday, time can be reserved for more important non-repetitive discussion and help.
