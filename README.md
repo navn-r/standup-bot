@@ -9,7 +9,7 @@ This bot is not meant to replace your daily standups outright. It is more of a h
 
 ### Initial Setup 
 
-[~~**Click Here**~~](https://www.youtube.com/watch?v=xfr64zoBTAQ) to add the bot to your server. 
+[Click Here](https://discord.com/oauth2/authorize?client_id=YOUR_CLIENT_ID&scope=bot&permissions=355408) to add the bot to your server. You'll need to fill in `YOUR_CLIENT_ID` with your bots client id.
 > Note that the above requires you to have the **Manage Server** permission in this server  
 
 The bot will then create an entry in the `MongoDB` database for the server, create the text channel `#daily-standups` and send an introduction.
